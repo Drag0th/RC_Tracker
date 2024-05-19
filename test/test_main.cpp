@@ -1,11 +1,12 @@
 #include <unity.h>
 #include <config.h>
+#include <cstdlib>
 
 float standarize_deg(int32_t lon_or_lat);
 void standarize_deg_test();
 float calculate_azimuth(int32_t tracker_x, int32_t tracker_y, int32_t object_x, int32_t object_y);
 void calculate_azimuth_test();
-float optimize_azimuth(float current_deg, float destination_deg);
+int optimize_azimuth(int current_deg, int destination_deg);
 void optimze_azimuth_test();
 
 int main(int argc, char **argv)
@@ -14,6 +15,7 @@ int main(int argc, char **argv)
     RUN_TEST(standarize_deg_test);
     RUN_TEST(calculate_azimuth_test);
     RUN_TEST(standarize_deg_test);
+    RUN_TEST(optimze_azimuth_test);
     UNITY_END();
     return 0;
 }
@@ -51,15 +53,19 @@ void calculate_azimuth_test()
     TEST_ASSERT_EQUAL_FLOAT(expected, acutal);
 }
 
-float optimize_azimuth(float current_deg, float destination_deg)
+#include <cstdlib>
+int optimize_azimuth(int current_deg, int destination_deg)
 {
-    float A, B, C;
+    int A, B, C, abs_A, abs_B, abs_C;
     A = destination_deg - current_deg;
+    abs_A = abs(A);
     B = destination_deg - current_deg - 360;
+    abs_B = abs(B);
     B = destination_deg - current_deg + 360;
-    if (abs(A) < abs(B))
+    abs_C = abs(C);
+    if (abs_A < abs_B)
     {
-        if (abs(A) < abs(C))
+        if (abs_A < abs_C)
         {
             return A;
         }
@@ -70,7 +76,7 @@ float optimize_azimuth(float current_deg, float destination_deg)
     }
     else
     {
-        if (abs(B) < abs(C))
+        if (abs_B < abs_C)
         {
             return B;
         }
@@ -83,7 +89,7 @@ float optimize_azimuth(float current_deg, float destination_deg)
 
 void optimze_azimuth_test()
 {
-    float expected = -32.4;
-    float acutal = optimize_azimuth(20, 352.4);
-    TEST_ASSERT_EQUAL_FLOAT(expected, acutal);
+    int expected = -90;
+    int acutal = optimize_azimuth(-90, -180);
+    TEST_ASSERT_EQUAL_INT(expected, acutal);
 }

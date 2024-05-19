@@ -14,9 +14,9 @@ float calculate_azimuth(float tracker_x, float tracker_y, float object_x, float 
     return ((float)(atan2(object_x, object_y)) * (180 / 3.14));
 }
 
-float optimize_azimuth(float current_deg, float destination_deg)
+int optimize_azimuth(int current_deg, int destination_deg)
 {
-    float A, B, C;
+    int A, B, C;
     A = destination_deg - current_deg;
     B = destination_deg - current_deg - 360;
     B = destination_deg - current_deg + 360;
