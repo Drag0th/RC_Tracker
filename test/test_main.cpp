@@ -56,16 +56,13 @@ void calculate_azimuth_test()
 #include <cstdlib>
 int optimize_azimuth(int current_deg, int destination_deg)
 {
-    int A, B, C, abs_A, abs_B, abs_C;
+    int A, B, C;
     A = destination_deg - current_deg;
-    abs_A = abs(A);
     B = destination_deg - current_deg - 360;
-    abs_B = abs(B);
     B = destination_deg - current_deg + 360;
-    abs_C = abs(C);
-    if (abs_A < abs_B)
+    if (abs(A) < abs(B))
     {
-        if (abs_A < abs_C)
+        if (abs(A) < abs(C))
         {
             return A;
         }
@@ -76,7 +73,7 @@ int optimize_azimuth(int current_deg, int destination_deg)
     }
     else
     {
-        if (abs_B < abs_C)
+        if (abs(B) < abs(C))
         {
             return B;
         }
