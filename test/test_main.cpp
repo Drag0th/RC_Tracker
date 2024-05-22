@@ -1,6 +1,5 @@
 #include <unity.h>
 #include <config.h>
-#include <cstdlib>
 
 float standarize_deg(int32_t lon_or_lat);
 void standarize_deg_test();
@@ -53,7 +52,6 @@ void calculate_azimuth_test()
     TEST_ASSERT_EQUAL_FLOAT(expected, acutal);
 }
 
-#include <cstdlib>
 int optimize_azimuth(int current_deg, int destination_deg)
 {
     int A, B, C;
@@ -86,7 +84,7 @@ int optimize_azimuth(int current_deg, int destination_deg)
 
 void optimze_azimuth_test()
 {
-    int expected = -90;
-    int acutal = optimize_azimuth(-90, -180);
+    int expected = -9;
+    int acutal = optimize_azimuth(116, 161);
     TEST_ASSERT_EQUAL_INT(expected, acutal);
 }
