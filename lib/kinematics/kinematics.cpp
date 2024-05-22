@@ -39,10 +39,10 @@ int optimize_azimuth(int current_deg, int destination_deg)
     int A, B, C;
     A = destination_deg - current_deg;
     B = destination_deg - current_deg - 360;
-    B = destination_deg - current_deg + 360;
-    if (abs(A) < abs(B))
+    C = destination_deg - current_deg + 360;
+    if (fabs(A) < fabs(B))
     {
-        if (abs(A) < abs(C))
+        if (fabs(A) < fabs(C))
         {
             return A;
         }
@@ -53,7 +53,7 @@ int optimize_azimuth(int current_deg, int destination_deg)
     }
     else
     {
-        if (abs(B) < abs(C))
+        if (fabs(B) < fabs(C))
         {
             return B;
         }

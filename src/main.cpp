@@ -8,8 +8,8 @@
 float tracker_x = 1, tracker_y = 1;
 float current_deg = 0, calculated_azimuth = 0, optimized_azimuth = 0;
 float standarized_tracker_x = 0, standarized_tracker_y = 0, standarized_test_x = 0, standarized_test_y = 0;
-int32_t test_x[6] = {2, 2, 2, 1, -2, -2};
-int32_t test_y[6] = {2, 1, -2, -2, 1, 2};
+int32_t test_x[6] = {2, 2, 2, 1, -2, 2};
+int32_t test_y[6] = {2, 1, -2, -2, 1, 1};
 // 45, 90, 135, +180, -90, -45
 SSD1306AsciiWire oled_display;
 A4988 stepper_motor(STEPS_PER_REVOLUTION, STEPPER_DRIVER_DIR_PIN, STEPPER_DRIVER_STEP_PIN);
@@ -45,7 +45,6 @@ void loop()
     calculated_azimuth = calculate_azimuth(standarized_tracker_x, standarized_tracker_y, standarized_test_x, standarized_test_y);
     optimized_azimuth = optimize_azimuth(current_deg, calculated_azimuth);
     stepper_motor.rotate(optimized_azimuth);
-    current_deg = optimized_azimuth;
     delay(100);
     while (digitalRead(BUTTON_PIN) == HIGH)
     {
@@ -55,5 +54,6 @@ void loop()
     oled_display.println("Current_deg: " + String((int)current_deg));
     oled_display.println("Destination_deg: " + String((int)calculated_azimuth));
     oled_display.println("Optimized_move: " + String((int)optimized_azimuth));
+    current_deg = calculated_azimuth;
   }
 }
