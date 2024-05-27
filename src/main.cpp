@@ -25,10 +25,10 @@ void setup()
   oled_display.println("BOOTING");
   stepper_motor.setSpeedProfile(A4988::LINEAR_SPEED, STEPPER_MOTOR_ACCELERATION, STEPPER_MOTOR_DECELERATION);
   stepper_motor.begin(STEPPER_MOTOR_RPM, STEPPER_MOTOR_MICROSTEPS);
-  delay(5000);
-  stepper_motor.rotate(360);
-  delay(100);
+  // delay(5000);
   stepper_motor.rotate(-360);
+  // delay(100);
+  stepper_motor.rotate(360);
   oled_display.clear();
   oled_display.set1X();
   oled_display.setFont(System5x7);
@@ -44,7 +44,6 @@ void loop()
     standarized_test_y = standarize_deg(test_y[i] * pow(10, 7));
     calculated_azimuth = calculate_azimuth(standarized_tracker_x, standarized_tracker_y, standarized_test_x, standarized_test_y);
     optimized_azimuth = optimize_azimuth(current_deg, calculated_azimuth);
-    stepper_motor.rotate(optimized_azimuth);
     delay(100);
     while (digitalRead(BUTTON_PIN) == HIGH)
     {
@@ -54,6 +53,7 @@ void loop()
     oled_display.println("Current_deg: " + String((int)current_deg));
     oled_display.println("Destination_deg: " + String((int)calculated_azimuth));
     oled_display.println("Optimized_move: " + String((int)optimized_azimuth));
+    stepper_motor.rotate(optimized_azimuth);
     current_deg = calculated_azimuth;
   }
 }
