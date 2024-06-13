@@ -7,21 +7,21 @@ float standarize_deg(int32_t lon_or_lat)
 
 float standarize_gps(float object_position, float trakcer_position)
 {
-    if (trakcer_position <= 0 && object_position <= 0)
+    if (trakcer_position <= 0 && object_position <= 0) // --
     {
         return object_position - trakcer_position;
     }
-    if (trakcer_position > 0 && object_position > 0)
+    if (trakcer_position > 0 && object_position > 0) // ++
     {
         return object_position - trakcer_position;
     }
-    if (trakcer_position > 0 && object_position < 0)
+    if (trakcer_position > 0 && object_position < 0) // +-
     {
-        return object_position + trakcer_position;
+        return object_position - trakcer_position;
     }
-    if (trakcer_position < 0 && object_position > 0)
+    if (trakcer_position < 0 && object_position > 0) // -+
     {
-        return object_position + trakcer_position;
+        return object_position - trakcer_position;
     }
 }
 
@@ -31,7 +31,7 @@ float calculate_azimuth(float tracker_x, float tracker_y, float object_x, float 
     object_y = standarize_gps(object_y, tracker_y);
     float standarized_object_x = standarize_deg(object_x);
     float standarized_object_y = standarize_deg(object_y);
-    return ((atan2(object_x, object_y)) * (180 / 3.141592));
+    return ((atan2(object_x, object_y)) * (180 / 3.14));
 }
 
 int optimize_azimuth(int current_deg, int destination_deg)
@@ -64,15 +64,12 @@ int optimize_azimuth(int current_deg, int destination_deg)
     }
 }
 
-float calculate_elevation_deg(int object_x, int object_y, int object_alt, int tracker_x, int tracker_y)
+float calculate_elevation(float tracker_x, float tracker_y, float object_x, float object_y, float object_alt)
 {
-
-    object_x = standarize_gps(object_x, tracker_x);
-    object_y = standarize_gps(object_y, tracker_y);
-    float standarized_object_x = standarize_deg(object_x);
-    float standarized_object_y = standarize_deg(object_y);
-    float distance_tracker_object = (sqrt(pow(standarized_object_x, 2) + pow(standarized_object_y, 2)));
-    float distance_ground_object = ((float)object_alt / 1000);
-
-    return (atan(distance_ground_object / distance_tracker_object) * (180 / PI));
+    float delta_x = standarize_gps(object_x, tracker_x);
+    float delta_y = standarize_gps(object_y, tracker_y);
+    float standarized_delta_x = standarize_deg(delta_x) * 111;
+    float standarized_delta_y = standarize_deg(delta_y) * 111;
+    float tracker_object_line = sqrt(pow(standarized_delta_x, 2) + pow(standarized_delta_y, 2));
+    return (atan(tracker_object_line / (object_alt / 1000000) * (180 / 3.14)));
 };

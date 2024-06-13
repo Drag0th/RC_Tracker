@@ -9,7 +9,8 @@ int optimize_azimuth(int current_deg, int destination_deg);
 void optimze_azimuth_test();
 float standarize_gps(float object_position, float trakcer_position);
 void standarize_gps_test();
-float calculate_elevation_deg(int object_x, int object_y, int object_alt, int tracker_x, int tracker_y);
+float calculate_elevation(float tracker_x, float tracker_y, float object_x, float object_y, float object_alt);
+void calculate_elevation_test();
 
 int main(int argc, char **argv)
 {
@@ -19,6 +20,7 @@ int main(int argc, char **argv)
     RUN_TEST(standarize_deg_test);
     RUN_TEST(optimze_azimuth_test);
     RUN_TEST(standarize_gps_test);
+    RUN_TEST(calculate_elevation_test);
     UNITY_END();
     return 0;
 }
@@ -129,15 +131,18 @@ void standarize_gps_test()
     TEST_ASSERT_EQUAL_FLOAT(-4.5, acutal4);
 }
 
-float calculate_elevation_deg(int object_x, int object_y, int object_alt, int tracker_x, int tracker_y)
+float calculate_elevation(float tracker_x, float tracker_y, float object_x, float object_y, float object_alt)
 {
-
-    object_x = standarize_gps(object_x, tracker_x);
-    object_y = standarize_gps(object_y, tracker_y);
-    float standarized_object_x = standarize_deg(object_x);
-    float standarized_object_y = standarize_deg(object_y);
-    float distance_tracker_object = (sqrt(pow(standarized_object_x, 2) + pow(standarized_object_y, 2)));
-    float distance_ground_object = ((float)object_alt / 1000);
-
-    return (atan(distance_ground_object / distance_tracker_object) * (180 / PI));
+    float delta_x = standarize_gps(object_x, tracker_x);
+    float delta_y = standarize_gps(object_y, tracker_y);
+    float standarized_delta_x = standarize_deg(delta_x) * 111;
+    float standarized_delta_y = standarize_deg(delta_y) * 111;
+    float tracker_object_line = sqrt(pow(standarized_delta_x, 2) + pow(standarized_delta_y, 2));
+    return (atan(tracker_object_line / (object_alt / 1000000)) * (180 / 3.14));
 };
+
+void calculate_elevation_test()
+{
+    float acutal = calculate_elevation(pow(10, 7), pow(10, 7), pow(10, 7) * 2, pow(10, 7) * 2, pow(10, 6) * 1);
+    TEST_ASSERT_EQUAL_FLOAT(89.68, acutal);
+}

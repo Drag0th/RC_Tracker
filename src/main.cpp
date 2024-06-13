@@ -12,7 +12,7 @@ int32_t test_x[6] = {2, 2, 2, 1, -2, 2};
 int32_t test_y[6] = {2, 1, -2, -2, 1, 1};
 // 45, 90, 135, +180, -90, -45
 SSD1306AsciiWire oled_display;
-A4988 stepper_motor(STEPS_PER_REVOLUTION, STEPPER_DRIVER_DIR_PIN, STEPPER_DRIVER_STEP_PIN);
+A4988 stepper_motor((STEPS_PER_REVOLUTION * AZIMUTH_GEAR_RATIO), STEPPER_DRIVER_DIR_PIN, STEPPER_DRIVER_STEP_PIN);
 
 void setup()
 {
