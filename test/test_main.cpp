@@ -40,11 +40,11 @@ void standarize_deg_test()
 
 float calculate_azimuth(int32_t tracker_x, int32_t tracker_y, int32_t object_x, int32_t object_y)
 {
-    object_x = object_x - tracker_x;
-    object_y = object_y - tracker_y;
+    object_x = standarize_gps(object_x, tracker_x);
+    object_y = standarize_gps(object_y, tracker_y);
     float standarized_object_x = standarize_deg(object_x);
     float standarized_object_y = standarize_deg(object_y);
-    return ((float)(atan2(object_x, object_y)) * (180 / PI));
+    return ((atan2(object_x, object_y)) * (180 / 3.14));
 }
 
 void calculate_azimuth_test()
