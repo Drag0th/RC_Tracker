@@ -39,7 +39,19 @@ void setup()
   stepper_motor.begin(STEPPER_MOTOR_RPM, STEPPER_MOTOR_MICROSTEPS);
   stepper_motor.rotate(-360);
   stepper_motor.rotate(360);
+  ESP32PWM::allocateTimer(0);
+  ESP32PWM::allocateTimer(1);
+  ESP32PWM::allocateTimer(2);
+  ESP32PWM::allocateTimer(3);
+  servo_motor.setPeriodHertz(50);
   servo_motor.attach(SERVO_MOTOR_PIN);
+  servo_motor.write(30);
+  delay(2000);
+  servo_motor.write(90);
+  delay(1000);
+  servo_motor.write(150);
+  delay(2000);
+  servo_motor.write(90);
   oled_display.clear();
   oled_display.set1X();
   oled_display.setFont(System5x7);
@@ -49,28 +61,15 @@ void loop()
 {
   for (int i = 0; i < 6; i++)
   {
-    calculated_azimuth = calculate_azimuth(tracker_x, tracker_y, test_x[i], test_y[i]);
-    optimized_azimuth = optimize_azimuth(current_azimuth_deg, calculated_azimuth);
+    calculated_elevation = calculate_elevation(tracker_x * pow(10, 4), tracker_y * pow(10, 4), test_x[i] * pow(10, 4), test_y[i] * pow(10, 4), test_alt[i] * pow(10, 4));
     delay(100);
     while (digitalRead(BUTTON_PIN) == HIGH)
     {
     }
     oled_display.clear();
-    oled_display.println("Current_x_y: x:" + String(test_x[i]) + " y:" + String(test_y[i]));
-    oled_display.println("Current_azimuth_deg: " + String((int)current_azimuth_deg));
-    oled_display.println("Destination_deg: " + String((int)calculated_azimuth));
-    oled_display.println("Optimized_move: " + String((int)optimized_azimuth));
-    stepper_motor.rotate(optimized_azimuth);
-    current_azimuth_deg = calculated_azimuth;
-    calculated_elevation = calculate_elevation(tracker_x, tracker_y, test_x[i], test_y[i], test_alt[i]);
-    delay(100);
-    while (digitalRead(BUTTON_PIN) == HIGH)
-    {
-    }
-    oled_display.clear();
-    oled_display.println("Current_alt: " + String(test_alt[i]));
-    oled_display.println("Current_elevation_deg: " + String((int)current_elevation_deg));
-    oled_display.println("Destination_elevation: " + String((int)calculated_elevation));
+    oled_display.println("C_alt: " + String(test_alt[i]));
+    oled_display.println("C_elevation: " + String((int)current_elevation_deg));
+    oled_display.println("Destination: " + String((int)calculated_elevation));
     servo_motor.write(calculated_elevation);
     current_elevation_deg = calculated_elevation;
   }

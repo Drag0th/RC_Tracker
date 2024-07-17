@@ -68,8 +68,8 @@ float calculate_elevation(float tracker_x, float tracker_y, float object_x, floa
 {
     float delta_x = standarize_gps(object_x, tracker_x);
     float delta_y = standarize_gps(object_y, tracker_y);
-    float standarized_delta_x = standarize_deg(delta_x) * 111;
-    float standarized_delta_y = standarize_deg(delta_y) * 111;
-    float tracker_object_line = sqrt(pow(standarized_delta_x, 2) + pow(standarized_delta_y, 2));
-    return (atan(tracker_object_line / (object_alt / 1000000) * (180 / 3.14)));
+    float standarized_delta_x = standarize_deg(delta_x);
+    float standarized_delta_y = standarize_deg(delta_y);
+    float tracker_object_line = sqrt(pow(standarized_delta_x, 2) + pow(standarized_delta_y, 2) * 111);
+    return (atan((object_alt / 1000000) / tracker_object_line) * (180 / 3.14));
 };
