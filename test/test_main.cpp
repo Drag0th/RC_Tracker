@@ -12,6 +12,10 @@ float standarize_gps(float object_position, float trakcer_position);
 void standarize_gps_test();
 float calculate_elevation(float tracker_x, float tracker_y, float object_x, float object_y, float object_alt);
 void calculate_elevation_test();
+float move_servo_motor(float move_angle);
+void move_servo_test();
+float elevation_control(float current_angle, float destination_angle);
+void elevation_control_test();
 
 int main(int argc, char **argv)
 {
@@ -22,6 +26,8 @@ int main(int argc, char **argv)
     RUN_TEST(optimze_azimuth_test);
     RUN_TEST(standarize_gps_test);
     RUN_TEST(calculate_elevation_test);
+    RUN_TEST(move_servo_test);
+    RUN_TEST(elevation_control_test);
     UNITY_END();
     return 0;
 }
@@ -98,30 +104,15 @@ void optimze_azimuth_test()
 
 float standarize_gps(float object_position, float trakcer_position)
 {
-    if (trakcer_position <= 0 && object_position <= 0) // --
-    {
-        return object_position - trakcer_position;
-    }
-    if (trakcer_position > 0 && object_position > 0) // ++
-    {
-        return object_position - trakcer_position;
-    }
-    if (trakcer_position > 0 && object_position < 0) // +-
-    {
-        return object_position - trakcer_position;
-    }
-    if (trakcer_position < 0 && object_position > 0) // -+
-    {
-        return object_position - trakcer_position;
-    }
+    return object_position - trakcer_position;
 }
 
 void standarize_gps_test()
 {
     float tracker_x[5] = {1, -1, 2, -2, 3.25};
-    float object_x[5] = {1, -1, -2, 2, -1.25};
+    float object_x[5] = {2, -1, -2, 2, -1.25};
     float acutal = standarize_gps(object_x[0], tracker_x[0]);
-    TEST_ASSERT_EQUAL_FLOAT(0, acutal);
+    TEST_ASSERT_EQUAL_FLOAT(1, acutal);
     float acutal1 = standarize_gps(object_x[1], tracker_x[1]);
     TEST_ASSERT_EQUAL_FLOAT(0, acutal1);
     float acutal2 = standarize_gps(object_x[2], tracker_x[2]);
@@ -138,12 +129,44 @@ float calculate_elevation(float tracker_x, float tracker_y, float object_x, floa
     float delta_y = standarize_gps(object_y, tracker_y);
     float standarized_delta_x = standarize_deg(delta_x);
     float standarized_delta_y = standarize_deg(delta_y);
-    float tracker_object_line = sqrt(pow(standarized_delta_x, 2) + pow(standarized_delta_y, 2) * 111);
+    float tracker_object_line = sqrt(pow(standarized_delta_x * 111, 2) + pow(standarized_delta_y * 111, 2));
     return (atan((object_alt / 1000000) / tracker_object_line) * (180 / 3.14));
 };
 
 void calculate_elevation_test()
 {
-    float acutal = calculate_elevation(1 * pow(10, 4), 1 * pow(10, 4), 2 * pow(10, 4), 2 * pow(10, 4), 1 * pow(10, 4));
-    TEST_ASSERT_EQUAL_FLOAT(43.399551, acutal);
+    float acutal = calculate_elevation(1 * pow(10, 4), 1 * pow(10, 4), 2 * pow(10, 4), 2 * pow(10, 4), 10 * pow(10, 4));
+    TEST_ASSERT_EQUAL_FLOAT(32.5149689, acutal);
+}
+
+float move_servo_motor(float move_angle)
+{
+    float time_delay = (0.165 * abs(move_angle)) / 60;
+    return time_delay;
+}
+
+void move_servo_test()
+{
+    float acutal = move_servo_motor(120);
+    TEST_ASSERT_EQUAL_FLOAT(0.33, acutal);
+}
+
+float elevation_control(float current_angle, float destination_angle)
+{
+    if (destination_angle > current_angle)
+    {
+        return (destination_angle - current_angle);
+    }
+    else
+    {
+        return (destination_angle - current_angle);
+    }
+}
+
+void elevation_control_test()
+{
+    float acutal = elevation_control(40, 90);
+    TEST_ASSERT_EQUAL_FLOAT(50, acutal);
+    float acutal2 = elevation_control(60, 50);
+    TEST_ASSERT_EQUAL_FLOAT(-10, acutal2);
 }

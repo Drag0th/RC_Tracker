@@ -1,28 +1,13 @@
 #include <kinematics.h>
 
-float standarize_deg(int32_t lon_or_lat)
+float standarize_deg(float lon_or_lat)
 {
     return (lon_or_lat / 10000000);
 }
 
 float standarize_gps(float object_position, float trakcer_position)
 {
-    if (trakcer_position <= 0 && object_position <= 0) // --
-    {
-        return object_position - trakcer_position;
-    }
-    if (trakcer_position > 0 && object_position > 0) // ++
-    {
-        return object_position - trakcer_position;
-    }
-    if (trakcer_position > 0 && object_position < 0) // +-
-    {
-        return object_position - trakcer_position;
-    }
-    if (trakcer_position < 0 && object_position > 0) // -+
-    {
-        return object_position - trakcer_position;
-    }
+    return object_position - trakcer_position;
 }
 
 float calculate_azimuth(float tracker_x, float tracker_y, float object_x, float object_y)
@@ -70,6 +55,18 @@ float calculate_elevation(float tracker_x, float tracker_y, float object_x, floa
     float delta_y = standarize_gps(object_y, tracker_y);
     float standarized_delta_x = standarize_deg(delta_x);
     float standarized_delta_y = standarize_deg(delta_y);
-    float tracker_object_line = sqrt(pow(standarized_delta_x, 2) + pow(standarized_delta_y, 2) * 111);
+    float tracker_object_line = sqrt(pow(standarized_delta_x * 111, 2) + pow(standarized_delta_y * 111, 2));
     return (atan((object_alt / 1000000) / tracker_object_line) * (180 / 3.14));
-};
+}
+
+float elevation_control(float current_angle, float destination_angle)
+{
+    if (destination_angle > current_angle)
+    {
+        return (destination_angle - current_angle);
+    }
+    else
+    {
+        return (destination_angle - current_angle);
+    }
+}
