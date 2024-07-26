@@ -4,7 +4,7 @@
 
 #define PI 3.14
 #define AZIMUTH_GEAR_RATIO 3
-#define DEG_KM_RATIO 111
+#define DEG_KM_RATIO 1 // <- Do testu kinematyki | Prawdziwy przelicznik -> 111
 
 #define STEPS_PER_REVOLUTION 200
 #define STEPPER_MOTOR_ACCELERATION 50
