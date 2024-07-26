@@ -49,8 +49,3 @@ float calculate_elevation(float tracker_x, float tracker_y, float object_x, floa
     float tracker_object_line = sqrt(pow(delta_x * DEG_KM_RATIO, 2) + pow(delta_y * DEG_KM_RATIO, 2));
     return (atan(object_alt / tracker_object_line) * (180 / 3.14));
 }
-
-float elevation_control(float current_angle, float destination_angle)
-{
-    return (destination_angle - current_angle);
-}

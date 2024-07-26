@@ -18,15 +18,15 @@ float calculated_elevation = 0;
 float optimized_azimuth = 0;
 float optimized_elevation = 0;
 //  -Test object variables
-int32_t test_x[6] = {2, 2, 2, 2, 2, 4};
-int32_t test_y[6] = {2, 2, 2, 2, 2, 5};
+int32_t test_x[6] = {2, 2, 2, 2, 2, 2};
+int32_t test_y[6] = {2, 1, 2, 1, 2, 1};
 // Azimuth_deg: 45, 90, 135, +180, -90, -45
-float test_alt[6] = {1, 2, 3, 4, 2, 1};
+float test_alt[6] = {1, 2, 3, 4, 2, 12};
 // Elevation_deg: 35, 54, 64, 35, 54, 11
 // Optimized_Elevation 35->19->10->-29->19->-43
 
 SSD1306AsciiWire oled_display;
-A4988 stepper_motor((STEPS_PER_REVOLUTION * AZIMUTH_GEAR_RATIO), STEPPER_DRIVER_DIR_PIN, STEPPER_DRIVER_STEP_PIN);
+A4988 stepper_motor((STEPS_PER_REVOLUTION), STEPPER_DRIVER_DIR_PIN, STEPPER_DRIVER_STEP_PIN);
 Servo servo_motor;
 
 void setup()
@@ -57,32 +57,32 @@ void loop()
 {
   for (int i = 0; i < 6; i++)
   {
-    calculated_elevation = calculate_elevation(tracker_x, tracker_y, test_x[i], test_y[i], test_alt[i]);
-    optimized_elevation = elevation_control(current_elevation_deg, calculated_elevation);
-    float time_delay = ((0.165 * abs(optimized_elevation)) / 60) * 1000;
+
+    /*
+    calculated_azimuth = calculate_azimuth(tracker_x, tracker_y, test_x[i], test_y[i]);
+    optimized_azimuth = optimize_azimuth(current_azimuth_deg, calculated_azimuth);
     oled_display.clear();
-    oled_display.println("Alt: " + String(test_alt[i]));
-    oled_display.println("C_elevation: " + String(current_elevation_deg));
-    oled_display.println("Destination: " + String(calculated_elevation));
-    oled_display.println("Move: " + String(optimized_elevation));
+    oled_display.println("X_Y: " + String(test_x[i]) + "_" + String(test_y[i]));
+    oled_display.println("C_azimuth: " + String(current_azimuth_deg));
+    oled_display.println("Destination: " + String(calculated_azimuth));
+    oled_display.println("Move: " + String(optimized_azimuth));
     while (digitalRead(BUTTON_PIN) == HIGH)
     {
     }
     delay(200);
-    if (optimized_elevation > 0)
+    stepper_motor.rotate(optimized_azimuth);
+    current_azimuth_deg = calculated_azimuth;
+    */
+     calculated_elevation = calculate_elevation(tracker_x, tracker_y, test_x[i], test_y[i], test_alt[i]);
+     oled_display.clear();
+     oled_display.println("Alt: " + String(test_alt[i]));
+     oled_display.println("C_elevation: " + String(current_elevation_deg));
+     oled_display.println("Destination: " + String(calculated_elevation));
+    while (digitalRead(BUTTON_PIN) == HIGH)
     {
-      servo_motor.write(75);
-      delay(time_delay);
-      servo_motor.write(90);
-      delay(15);
     }
-    else
-    {
-      servo_motor.write(113);
-      delay(time_delay);
-      servo_motor.write(90);
-      delay(15);
-    }
+    delay(200);
+    servo_motor.write(120 - calculated_elevation);
     current_elevation_deg = calculated_elevation;
   }
 }
