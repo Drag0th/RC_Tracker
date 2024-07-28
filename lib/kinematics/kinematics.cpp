@@ -42,10 +42,10 @@ int optimize_azimuth(int current_deg, int destination_deg)
     }
 }
 
-float calculate_elevation(float tracker_x, float tracker_y, float object_x, float object_y, float object_alt)
+float calculate_elevation(float tracker_x, float tracker_y, float tracker_alt, float object_x, float object_y, float object_alt)
 {
     float delta_x = standarize_gps(object_x, tracker_x);
     float delta_y = standarize_gps(object_y, tracker_y);
     float tracker_object_line = sqrt(pow(delta_x * DEG_KM_RATIO, 2) + pow(delta_y * DEG_KM_RATIO, 2));
-    return (atan(object_alt / tracker_object_line) * (180 / 3.14));
+    return (atan((object_alt - tracker_alt) / tracker_object_line) * (180 / 3.14));
 }
