@@ -1,7 +1,5 @@
 #pragma once
 
-#define I2C_ADDRESS 0x3C
-
 #define PI 3.14
 #define AZIMUTH_GEAR_RATIO 3
 #define DEG_KM_RATIO 1 // <- Do testu kinematyki | Prawdziwy przelicznik -> 111
