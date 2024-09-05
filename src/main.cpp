@@ -5,6 +5,7 @@
 #include "SSD1306AsciiWire.h"
 #include <Wire.h>
 #include "IST8310.h"
+#include <MagnetometerHandler.h>
 // ################
 #include <config.h>
 #include <kinematics.h>
@@ -15,8 +16,8 @@
 #define TXD2 17
 
 IST8310 Magnetometer;
-SSD1306AsciiWire Display;
 Vec3f *MagnetometerValue;
+SSD1306AsciiWire Display;
 
 void setup()
 {
@@ -37,9 +38,8 @@ void setup()
 void loop()
 {
   // MAVLink_receive();
-  Magnetometer.update();
-  MagnetometerValue = Magnetometer.get_magnetometer();
-  display_direction(Display, MagnetometerValue);
-  // display_MAVLink(Display);
+  //  display_MAVLink(Display);
+  magnetometer_check(Magnetometer, MagnetometerValue);
+  display_heading(Display);
   delay(200);
 }
