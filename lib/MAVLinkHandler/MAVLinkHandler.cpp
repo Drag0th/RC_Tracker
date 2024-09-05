@@ -29,9 +29,9 @@ int32_t ap_alt_ag;
 void MAVLink_receive()
 {
 
-    while (Serial.available())
+    while (Serial2.available())
     {
-        uint8_t c = Serial.read();
+        uint8_t c = Serial2.read();
         if (mavlink_parse_char(MAVLINK_COMM_0, c, &msg, &status))
         {
             switch (msg.msgid)
