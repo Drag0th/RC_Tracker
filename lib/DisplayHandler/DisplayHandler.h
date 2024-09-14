@@ -10,4 +10,4 @@
 
 void display_initialization(SSD1306AsciiWire &Display);
 void display_MAVLink(SSD1306AsciiWire &Display);
-void display_heading(SSD1306AsciiWire &Display);
+void display_heading(SSD1306AsciiWire &Display, float mag_heading, String est_heading);

@@ -27,19 +27,15 @@ void display_MAVLink(SSD1306AsciiWire &Display)
     Display.println(ap_fixtype);
 }
 
-void display_heading(SSD1306AsciiWire &Display)
+void display_heading(SSD1306AsciiWire &Display, float mag_heading, String est_heading)
 {
     Display.clear();
     Display.setFont(System5x7);
     Display.set1X();
     Display.println("Magnetometer:");
     Display.set1X();
-    Display.print("X: ");
-    Display.println(mag_x, 2);
-    Display.print("Y: ");
-    Display.println(mag_y, 2);
-    Display.print("Z: ");
-    Display.println(mag_z, 2);
-    Display.print("Az_Heading_Deg: ");
-    Display.println(azimuth_heading, 2);
+    Display.print("Heading_Deg: ");
+    Display.println(mag_heading, 2);
+    Display.print("Heading_Est: ");
+    Display.println(est_heading);
 }
