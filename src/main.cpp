@@ -8,6 +8,7 @@
 #include <MagnetometerHandler.h>
 #include <A4988.h>
 #include <AzimuthHandler.h>
+#include <ESP32Encoder.h>
 // ################
 #include <config.h>
 #include <kinematics.h>
@@ -16,11 +17,16 @@
 #define RXD2 16
 #define TXD2 17
 
+#define CLK 32
+#define DT 33
+#define SW 25
+
 IST8310 Magnetometer;
 Vec3f *MagnetometerValue;
 SSD1306AsciiWire Display;
 A4988 StepperMotor(STEPS_PER_REVOLUTION *AZIMUTH_GEAR_RATIO, STEPPER_DRIVER_DIR_PIN, STEPPER_DRIVER_STEP_PIN);
 Servo ServoMotor;
+ESP32Encoder Encoder;
 
 // Heading variables
 float mag_heading;
@@ -29,6 +35,9 @@ String est_heading;
 unsigned long previous_millis;
 unsigned long current_millis;
 const long interval = 1000;
+// Encoder variables
+long encoder_position;
+
 void setup()
 {
   // I2C Initialization
@@ -55,10 +64,38 @@ void setup()
   ESP32PWM::allocateTimer(3);
   ServoMotor.setPeriodHertz(50);
   ServoMotor.attach(SERVO_MOTOR_PIN);
+  ServoMotor.write(-90);
+  delay(1000);
+  ServoMotor.write(180);
+  delay(1000);
   ServoMotor.write(0);
   delay(100);
+  // Encoder Initialization
+  Encoder.attachHalfQuad(DT, CLK);
+  Encoder.setCount(0);
+  pinMode(SW, INPUT_PULLUP);
   //
   Display.clear();
+  // Manual heading calibration
+  while (digitalRead(SW))
+  {
+    handle_heading(Magnetometer, MagnetometerValue, mag_heading, est_heading);
+    display_heading(Display, mag_heading, est_heading);
+    if (encoder_position > (Encoder.getCount() / 2))
+    {
+      StepperMotor.rotate(-5);
+      encoder_position = Encoder.getCount() / 2;
+    }
+    else if (encoder_position < (Encoder.getCount() / 2))
+    {
+      StepperMotor.rotate(5);
+      encoder_position = Encoder.getCount() / 2;
+    }
+    else
+    {
+    }
+    delay(200);
+  }
 }
 
 void loop()
@@ -68,9 +105,7 @@ void loop()
   {
     previous_millis = current_millis;
   }
-  // MAVLink_receive();
-  //  display_MAVLink(Display);
-  handle_heading(Magnetometer, MagnetometerValue, mag_heading, est_heading);
-  display_heading(Display, mag_heading, est_heading);
+  MAVLink_receive();
+  display_MAVLink(Display);
   delay(200);
 }
