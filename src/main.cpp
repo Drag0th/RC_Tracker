@@ -7,6 +7,7 @@
 #include "IST8310.h"
 #include <MagnetometerHandler.h>
 #include <A4988.h>
+#include <AzimuthHandler.h>
 // ################
 #include <config.h>
 #include <kinematics.h>
@@ -24,7 +25,10 @@ Servo ServoMotor;
 // Heading variables
 float mag_heading;
 String est_heading;
-
+// Non-Blocking delay
+unsigned long previous_millis;
+unsigned long current_millis;
+const long interval = 1000;
 void setup()
 {
   // I2C Initialization
@@ -59,6 +63,11 @@ void setup()
 
 void loop()
 {
+  current_millis = millis();
+  if (current_millis - previous_millis >= interval)
+  {
+    previous_millis = current_millis;
+  }
   // MAVLink_receive();
   //  display_MAVLink(Display);
   handle_heading(Magnetometer, MagnetometerValue, mag_heading, est_heading);

@@ -1,16 +1,9 @@
 #pragma once
 
 #define PI 3.14
-#define AZIMUTH_GEAR_RATIO 3
+
 #define DEG_KM_RATIO 1 // <- Do testu kinematyki | Prawdziwy przelicznik -> 111
 
-#define STEPS_PER_REVOLUTION 200
-#define STEPPER_MOTOR_ACCELERATION 50
-#define STEPPER_MOTOR_DECELERATION 50
-#define STEPPER_MOTOR_MICROSTEPS 16
-#define STEPPER_MOTOR_RPM 15
 
-#define STEPPER_DRIVER_DIR_PIN 12
-#define STEPPER_DRIVER_STEP_PIN 14
 #define BUTTON_PIN 27
 #define SERVO_MOTOR_PIN 26

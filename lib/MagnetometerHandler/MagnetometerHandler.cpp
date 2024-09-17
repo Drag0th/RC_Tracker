@@ -32,6 +32,8 @@ String estimate_heading(float mag_heading)
         return "W";
     else if ((mag_heading >= -72 && mag_heading < -36))
         return "NW";
+    else
+        return "ERROR";
 }
 
 void handle_heading(IST8310 &Magnetometer, Vec3f *MagnetometerValue, float &mag_heading, String &est_heading)

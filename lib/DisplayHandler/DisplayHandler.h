@@ -4,7 +4,7 @@
 #include <MAVLinkHandler.h>
 #include "IST8310.h"
 #include <MagnetometerHandler.h>
-#include <AzimuthHandler.h>
+
 
 #define I2C_ADDRESS 0x3C
 

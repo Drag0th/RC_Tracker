@@ -1,7 +1,6 @@
 #pragma once
 
 #include "IST8310.h"
-#include <AzimuthHandler.h>
 
 float calc_heading(float mag_x, float mag_y);
 void magnetometer_check(IST8310 &Magnetometer, Vec3f *MagnetometerValue, float &mag_x, float &mag_y, float &mag_z);
