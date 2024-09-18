@@ -9,6 +9,8 @@
 #include <A4988.h>
 #include <AzimuthHandler.h>
 #include <ESP32Encoder.h>
+#include <Adafruit_GPS.h>
+#include <BluetoothSerial.h>
 // ################
 #include <config.h>
 #include <kinematics.h>
@@ -27,6 +29,8 @@ SSD1306AsciiWire Display;
 A4988 StepperMotor(STEPS_PER_REVOLUTION *AZIMUTH_GEAR_RATIO, STEPPER_DRIVER_DIR_PIN, STEPPER_DRIVER_STEP_PIN);
 Servo ServoMotor;
 ESP32Encoder Encoder;
+Adafruit_GPS GPS(&Serial2);
+BluetoothSerial SerialBT;
 
 // Heading variables
 float mag_heading;
@@ -37,6 +41,12 @@ unsigned long current_millis;
 const long interval = 1000;
 // Encoder variables
 long encoder_position;
+// GPS variables
+uint32_t timer = millis();
+// BT variables
+const char *bt_pin = "1337";
+String bt_name = "MAVLink-Slave";
+//
 
 void setup()
 {
@@ -53,27 +63,31 @@ void setup()
   // Stepper Motor Initialization
   StepperMotor.setSpeedProfile(A4988::LINEAR_SPEED, STEPPER_MOTOR_ACCELERATION, STEPPER_MOTOR_DECELERATION);
   StepperMotor.begin(STEPPER_MOTOR_RPM, STEPPER_MOTOR_MICROSTEPS);
-  delay(100);
-  StepperMotor.rotate(360);
-  delay(100);
-  StepperMotor.rotate(-360);
-  // Servo Initialization
+  // delay(100);
+  // StepperMotor.rotate(360);
+  // delay(100);
+  // StepperMotor.rotate(-360);
+  //  Servo Initialization
   ESP32PWM::allocateTimer(0);
   ESP32PWM::allocateTimer(1);
   ESP32PWM::allocateTimer(2);
   ESP32PWM::allocateTimer(3);
   ServoMotor.setPeriodHertz(50);
   ServoMotor.attach(SERVO_MOTOR_PIN);
-  ServoMotor.write(-90);
-  delay(1000);
-  ServoMotor.write(180);
-  delay(1000);
-  ServoMotor.write(0);
-  delay(100);
-  // Encoder Initialization
+  // ServoMotor.write(-90);
+  // delay(1000);
+  // ServoMotor.write(180);
+  // delay(1000);
+  //  Encoder Initialization
   Encoder.attachHalfQuad(DT, CLK);
   Encoder.setCount(0);
   pinMode(SW, INPUT_PULLUP);
+  // GPS Initialization
+  GPS.begin(9600);
+  // BT Initialization
+
+  SerialBT.begin(bt_name);
+  SerialBT.setPin(bt_pin);
   //
   Display.clear();
   // Manual heading calibration
@@ -100,12 +114,47 @@ void setup()
 
 void loop()
 {
+
   current_millis = millis();
   if (current_millis - previous_millis >= interval)
   {
     previous_millis = current_millis;
   }
-  MAVLink_receive();
+  MAVLink_receive(SerialBT);
   display_MAVLink(Display);
   delay(200);
+
+  /*
+   char c = GPS.read();
+   if (GPS.newNMEAreceived())
+   {
+     if (!GPS.parse(GPS.lastNMEA()))
+       return;
+   }
+   if (millis() - timer > 2000)
+
+   {
+
+     timer = millis();
+     Display.print("Fix: ");
+     Display.println((int)GPS.fix);
+     if (GPS.fix)
+     {
+       Display.print("Location: ");
+       Display.print(GPS.latitude);
+       Display.print(GPS.lat);
+       Display.print(", ");
+       Display.print(GPS.longitude);
+       Display.println(GPS.lon);
+       Display.print("Altitude: ");
+       Display.println(GPS.altitude);
+       Display.print("Satellites: ");
+       Display.println((int)GPS.satellites);
+       delay(200);
+       Display.clear();
+     }
+     delay(200);
+     Display.clear();
+   }
+   */
 }

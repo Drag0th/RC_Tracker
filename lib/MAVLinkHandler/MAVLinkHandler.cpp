@@ -26,12 +26,12 @@ int32_t ap_lat;
 int32_t ap_lon;
 int32_t ap_alt_ag;
 
-void MAVLink_receive()
+void MAVLink_receive(BluetoothSerial &SerialBT)
 {
 
-    while (Serial2.available())
+    while (SerialBT.available())
     {
-        uint8_t c = Serial2.read();
+        uint8_t c = SerialBT.read();
         if (mavlink_parse_char(MAVLINK_COMM_0, c, &msg, &status))
         {
             switch (msg.msgid)
