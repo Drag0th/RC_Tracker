@@ -69,3 +69,14 @@ void display_azimuth(SSD1306AsciiWire &Display, float calculated_azimuth, int op
     Display.print("Curr_An: ");
     Display.println(current_angle);
 }
+
+void display_elevation(SSD1306AsciiWire &Display, float calculated_elevation)
+{
+    Display.clear();
+    Display.setFont(System5x7);
+    Display.set2X();
+    Display.println("Elevation ");
+    Display.set1X();
+    Display.print("Calc_El: ");
+    Display.println(calculated_elevation, 6);
+}

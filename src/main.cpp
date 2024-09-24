@@ -9,12 +9,9 @@
 #include <A4988.h>
 #include <AzimuthHandler.h>
 #include <ESP32Encoder.h>
-#include <Adafruit_GPS.h>
 #include <BluetoothSerial.h>
-// ################
-#include <config.h>
-#include <kinematics.h>
 #include <ESP32Servo.h>
+#include <ElevationHandler.h>
 
 #define RXD2 16
 #define TXD2 17
@@ -22,6 +19,8 @@
 #define CLK 32
 #define DT 33
 #define SW 25
+
+#define SERVO_MOTOR_PIN 26
 
 IST8310 Magnetometer;
 Vec3f *MagnetometerValue;
@@ -54,7 +53,12 @@ int display_flag;
 float calculated_azimuth;
 int optimized_azimuth;
 int current_angle;
-//
+// Elevation variables
+float calculated_elevation;
+// Test
+float delta_x;
+float delta_y;
+float tracker_object_line;
 
 void setup()
 {
@@ -81,8 +85,8 @@ void setup()
   ESP32PWM::allocateTimer(2);
   ESP32PWM::allocateTimer(3);
   ServoMotor.setPeriodHertz(50);
-  ServoMotor.attach(SERVO_MOTOR_PIN);
-  ServoMotor.write(-90);
+  ServoMotor.attach(SERVO_MOTOR_PIN, 500, 2400);
+  ServoMotor.write(100);
   delay(1000);
   ServoMotor.write(180);
   delay(1000);
@@ -130,14 +134,18 @@ void loop()
     set_tracker_location = false;
   }
   // Calculate Azimuth
-  calculated_azimuth = calculate_azimuth(tracker_lat, tracker_lon, ap_lat, ap_lon);
-  optimized_azimuth = optimize_azimuth(current_angle, calculated_azimuth);
   if (set_tracker_location == false)
   {
+    calculated_azimuth = calculate_azimuth(tracker_lat, tracker_lon, ap_lat, ap_lon);
+    optimized_azimuth = optimize_azimuth(current_angle, calculated_azimuth);
     StepperMotor.rotate(optimized_azimuth);
+    current_angle = calculated_azimuth;
   }
-  // After stepper move
-  current_angle = calculated_azimuth;
+  if (set_tracker_location == false)
+  {
+    calculated_elevation = calculate_elevation(tracker_lat, tracker_lon, tracker_alt_ag, ap_lat, ap_lon, ap_alt_ag);
+    ServoMotor.write(map(calculated_elevation, 0, 90, 180, 100));
+  }
   // Non-blockin delay
   current_millis = millis();
   if (current_millis - previous_millis >= interval)
@@ -152,10 +160,15 @@ void loop()
     }
     else if (display_flag == 2)
     {
+      display_flag = 3;
+    }
+    else if (display_flag == 3)
+    {
       display_flag = 0;
     }
     previous_millis = current_millis;
   }
+
   // Display switch
   switch (display_flag)
   {
@@ -170,6 +183,11 @@ void loop()
   case 2:
     display_azimuth(Display, calculated_azimuth, optimized_azimuth, current_angle);
     delay(200);
+    break;
+  case 3:
+    display_elevation(Display, calculated_elevation);
+    delay(200);
+
     break;
   default:
     break;
