@@ -6,10 +6,7 @@ float calculate_azimuth(float tracker_x, float tracker_y, float object_x, float 
     ref_x = object_x - tracker_x;
     ref_y = object_y - tracker_y;
     calculated_az = ((atan2(ref_y, ref_x)) * (180 / PI));
-    if (calculated_az > 0)
-        return calculated_az;
-    else
-        return (180 - calculated_az) + 180;
+    return calculated_az;
 }
 
 int optimize_azimuth(int current_angle, int destination_angle)
