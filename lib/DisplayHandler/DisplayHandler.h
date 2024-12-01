@@ -2,8 +2,6 @@
 #include "SSD1306Ascii.h"
 #include "SSD1306AsciiWire.h"
 #include <MAVLinkHandler.h>
-#include "IST8310.h"
-#include <MagnetometerHandler.h>
 
 #define I2C_ADDRESS 0x3C
 
